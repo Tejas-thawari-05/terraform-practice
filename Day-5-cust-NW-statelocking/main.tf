@@ -1,27 +1,27 @@
 # CREATION OF THE VPC
 resource "aws_vpc" "vpc" {
-  cidr_block = "10.0.0.0/16"
+  cidr_block = var.vpc-cidr
   tags = {
-    name= "my-vpc-cust"
+    Name= "my-vpc-cust"
   }
 }
 
 # CREATION OF SUBNET
 resource "aws_subnet" "public-1" {
   vpc_id = aws_vpc.vpc.id
-  cidr_block = "10.0.1.0/24"
+  cidr_block = var.public-subnet-cidr
   availability_zone = "us-east-1a"
   tags = {
-    name = "public-1"
+    Name = "public-1"
   }
 }
 
 resource "aws_subnet" "private-1" {
   vpc_id = aws_vpc.vpc.id
-  cidr_block = "10.0.2.0/24"
+  cidr_block = var.private-subnet-cidr
   availability_zone = "us-east-1a"
   tags = {
-    name = "private-1"
+    Name = "private-1"
   }
 }
 
@@ -29,7 +29,7 @@ resource "aws_subnet" "private-1" {
 resource "aws_internet_gateway" "IGW" {
   vpc_id = aws_vpc.vpc.id
   tags = {
-    name = "cust-IG"
+    Name = "cust-IG"
   }
 }
 
@@ -37,10 +37,10 @@ resource "aws_internet_gateway" "IGW" {
 resource "aws_route_table" "RT" {
   vpc_id = aws_vpc.vpc.id
   tags = {
-    name = "cust-RT"
+    Name = "cust-RT"
   }
   route { 
-    cidr_block = "0.0.0.0/0"
+    cidr_block = var.pub-Rt-route-cide
     gateway_id =  aws_internet_gateway.IGW.id
   } 
 }
@@ -55,7 +55,7 @@ resource "aws_route_table_association" "associate" {
 resource "aws_eip" "eip" {
     domain = "vpc"
     tags = {
-      name = "epi-nat"
+      Name = "epi-nat"
     }
 }
 
@@ -73,10 +73,10 @@ resource "aws_nat_gateway" "nat" {
 resource "aws_route_table" "pvt-RT" {
   vpc_id = aws_vpc.vpc.id
   tags = {
-    name = "pvt-RT"
+    Name = "pvt-RT"
   }
   route {
-    cidr_block = "0.0.0.0/0"
+    cidr_block = var.pvt-Rt-route-cide
     nat_gateway_id = aws_nat_gateway.nat.id
   }
 }
@@ -93,7 +93,7 @@ resource "aws_security_group" "sg" {
   name        = "allow_tls"
   description = "Allow inbound traffic on port 22 and 80"
   tags = {
-    name = "cust-sg"
+    Name = "cust-sg"
   }
 
   ingress {
@@ -120,10 +120,10 @@ resource "aws_security_group" "sg" {
 
 # CREATION OF PUBLIC EC2 INSTANCE
 resource "aws_instance" "public-ec2" {
-  ami           = "ami-0c94855ba95c71c99"
-  instance_type = "t2.micro"
+  ami           = var.ami
+  instance_type = var.instance_type
   tags = {
-    name = "public-ec2"
+    Name = "public-ec2"
   }
   subnet_id = aws_subnet.public-1.id
   vpc_security_group_ids = [ aws_security_group.sg.id ]
@@ -132,12 +132,12 @@ resource "aws_instance" "public-ec2" {
 
 # CREATIION OF PRIVATE EC2 INSTANCE
 resource "aws_instance" "private-ec2" {
-  ami           = "ami-0c94855ba95c71c99"
-  instance_type = "t2.micro"
+  ami           = var.ami
+  instance_type = var.instance_type
   tags = {
-    name = "private-ec2"
+    Name = "private-ec2"
     }
     subnet_id = aws_subnet.private-1.id
-    key_name = "project"
+    key_name = var.key-name
     vpc_security_group_ids = [ aws_security_group.sg.id ]
 }
