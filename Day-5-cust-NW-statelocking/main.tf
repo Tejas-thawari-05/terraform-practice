@@ -127,6 +127,7 @@ resource "aws_instance" "public-ec2" {
   }
   subnet_id = aws_subnet.public-1.id
   vpc_security_group_ids = [ aws_security_group.sg.id ]
+  associate_public_ip_address = true
 }
 
 # CREATIION OF PRIVATE EC2 INSTANCE
