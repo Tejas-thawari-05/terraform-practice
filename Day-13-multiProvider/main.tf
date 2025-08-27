@@ -1,7 +1,9 @@
 provider "aws" {
   region = "us-east-1"
-  alias = "test"
-}
+  # alias = "test"
+
+  profile = "prod"     # if we configure keys for the different profile this will apply according to that in resource block i dont need to write provider
+}                       # if provider not mention in the resource block the resource block will use profile 
 
 provider "aws" {
   region = "us-west-2"
@@ -16,5 +18,5 @@ resource "aws_vpc" "name" {
 
 resource "aws_s3_bucket" "name" {
   bucket = "ahjahfahfha"
-  provider = aws.test
+  
 }
