@@ -1,10 +1,10 @@
 
 data "aws_secretsmanager_secret_version" "name" {
-  secret_id = "rdsSecrets"
+  secret_id = "rdsSecrets"                              # create manually and called using data source
 }
 
 locals {
-  secret = jsondecode(data.aws_secretsmanager_secret_version.name.secret_string)
+  secret = jsondecode(data.aws_secretsmanager_secret_version.name.secret_string)     # WILL RETRIVE ALL KEY AND VALUE ASSOCIATE WITH "rdsSecrets"
 }
 
 
@@ -18,7 +18,7 @@ resource "aws_db_instance" "default" {
 
 
 #       USER MANAGES SECRETS CUSTUM CREATED SECRETS STORED IN SECRETS MANAGER 
- username                    = local.secret.username
+ username                    = local.secret.username                                  #  CREATING SECRETS USING TERRAFORM IS NOT RECOMMENDED AS IT STORES IN STATEFILE
  password                     = local.secret.password
   
 
